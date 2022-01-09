@@ -7,6 +7,11 @@ Usage
 Usage:
   `python3 htmlmerger.py inputfile [optional: outputfile]`
 
+
+Dependencies
+============
+Uses only python-native libraries
+
 TODO
 =====
  - also merge CSS
