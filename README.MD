@@ -14,6 +14,4 @@ Uses only python-native libraries
 
 TODO
 =====
- - also merge CSS
- - also merge images
-
+ - clean up code (?) ... this will never happen :D

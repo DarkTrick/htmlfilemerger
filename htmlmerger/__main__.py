@@ -1,15 +1,15 @@
 from html.parser import HTMLParser
 import os
 import sys
+import base64
 
 
 gHelp = """
-Merge JS/HTML into one single file
-TODO: also merge CSS
-      also merge images
+Merge JS/CSS/images/HTML into one single file
+Version: 1.0
 
 Usage:
-  htmlmerger.py inputfile [optional: outputfile]
+  htmlmerger inputfile [optional: outputfile]
 
 """
 
@@ -17,6 +17,14 @@ Usage:
 def getFileContent (strFilepath):
   content = ""
   with open (strFilepath, "r") as file:
+    content = file.read ()
+  return content
+
+
+
+def getFileContentBytes (strFilepath):
+  content = b""
+  with open (strFilepath, "rb") as file:
     content = file.read ()
   return content
 
@@ -37,43 +45,86 @@ class HtmlMerger(HTMLParser):
 
 
   def _addMessage_fileNotFound(self, file_asInHtmlFile, file_searchpath):
-    self.messages.push ("Error: Line " + self.getpos () +
-                        ": Could not find file `" + file_asInHtmlFile +
-                        "`; searched in `" + file_searchpath + "`." )
+    self.messages.append ("Error: Line " + str (self.getpos ()[0]) +
+                        ": Could not find file `" + str (file_asInHtmlFile) +
+                        "`; searched in `" + str (file_searchpath) + "`." )
 
+
+
+  def _getAttribute (self, attributes, attributeName):
+    """Return attribute value or `None`, if not existend"""
+    for attr in attributes:
+      key = attr[0]
+      if (key == attributeName):
+        return attr[1]
+    return None
+
+
+  def _getFullFilepath (self, relPath):
+    return os.path.join (self._baseDir, relPath)
 
 
   def handle_starttag(self, tag, attrs):
-      self._result += "<" + tag + " "
 
-      for attr in attrs:
-        key = attr[0]
-        value = attr[1]
+    # Style references are within `link` tags. So we have to
+    #  convert the whole tag
+    if (tag == "link"):
+      href = self._getAttribute (attrs, "href")
+      if (href):
+        hrefFullPath = self._getFullFilepath (href)
+        if (not os.path.isfile (hrefFullPath)):
+          self._addMessage_fileNotFound (href, hrefFullPath)
+          return
+        styleContent = getFileContent (hrefFullPath)
+        self._result += "<style>" + styleContent + "</style>"
+        return
 
-        # main work: read source content and add it to the file
-        if (tag == "script" and key == "src"):
-          #self._result += "type='text/javascript'"
-          strReferencedFile = os.path.join (self._baseDir, value)
-          if (not os.path.isfile (strReferencedFile)):
-            self._addMessage_fileNotFound (value, strReferencedFile)
-            continue
-          referencedContent = getFileContent (strReferencedFile)
-          self._additionalData += referencedContent
+    self._result += "<" + tag + " "
 
-          # do not process this key
+    for attr in attrs:
+      key = attr[0]
+      value = attr[1]
+
+      # main work: read source content and add it to the file
+      if (tag == "script" and key == "src"):
+        #self._result += "type='text/javascript'"
+        strReferencedFile = self._getFullFilepath (value)
+        if (not os.path.isfile (strReferencedFile)):
+          self._addMessage_fileNotFound (value, strReferencedFile)
+          continue
+        referencedContent = getFileContent (strReferencedFile)
+        self._additionalData += referencedContent
+
+        # do not process this key
+        continue
+
+      if (tag == "img" and key == "src"):
+        imgPathRel = value
+        imgPathFull = self._getFullFilepath (imgPathRel)
+        if (not os.path.isfile (imgPathFull)):
+          self._addMessage_fileNotFound (imgPathRel, imgPathFull)
           continue
 
-        # TODO: merge CSS
-        # TODO: merge images
+        imageExtension = os.path.splitext (imgPathRel)[1][1:]
+        imageFormat = imageExtension
+
+        # convert image data into browser-undertandable src value
+        image_bytes = getFileContentBytes (imgPathFull)
+        image_base64 = base64.b64encode (image_bytes)
+        src_content = "data:image/{};base64, {}".format(imageFormat,image_base64.decode('ascii'))
+        self._result += "src='" + src_content + "'"
+
+        continue
 
 
-        # choose the right quotes
-        if ('"' in value):
-          self._result += key + "='" + value + "' "
-        else:
-          self._result += key + '="' + value + '" '
 
-      self._result +=  ">"
+      # choose the right quotes
+      if ('"' in value):
+        self._result += key + "='" + value + "' "
+      else:
+        self._result += key + '="' + value + '" '
+
+    self._result +=  ">"
 
   def _writeAndResetAdditionalData(self):
     self._result += self._additionalData
@@ -107,12 +158,24 @@ def merge(strInfile, strOutfile):
 
   parser = HtmlMerger()
   content_changed = parser.run (content, baseDir)
-  #print (content_changed)
+
+  # log errors
+  if (len (parser.messages) > 0):
+    print ("Problems occured")
+    for msg in parser.messages:
+      print ("  " + msg)
+    print ("")
+
+  # debug:
+  if (False):
+    print (content_changed)
+    exit ()
 
 
   # write result
   with open (strOutfile, "w") as file:
     file.write (content_changed)
+
 
 
 def main():
