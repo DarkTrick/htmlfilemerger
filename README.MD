@@ -2,6 +2,9 @@ What is this?
 ==============
 Program to Merge JS/HTML into one single html file.
 
+![depiction of what the tool does](./ref/tool_explanation.png)
+
+
 Usage
 =====
 Usage:
