@@ -68,7 +68,9 @@ class HtmlMerger(HTMLParser):
 
     # Style references are within `link` tags. So we have to
     #  convert the whole tag
-    if (tag == "link"):
+    attrDict = dict(attrs)
+    rel = attrDict.get('rel')
+    if (tag == "link" and (rel != 'icon') ):
       href = self._getAttribute (attrs, "href")
       if (href):
         hrefFullPath = self._getFullFilepath (href)
