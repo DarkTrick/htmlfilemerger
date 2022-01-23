@@ -121,7 +121,9 @@ class HtmlMerger(HTMLParser):
 
 
       # choose the right quotes
-      if ('"' in value):
+      if (value is None):
+        self._result += key + ' '
+      elif ('"' in value):
         self._result += key + "='" + value + "' "
       else:
         self._result += key + '="' + value + '" '
