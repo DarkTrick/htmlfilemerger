@@ -1,1 +1,0 @@
-from htmlmerger import __main__

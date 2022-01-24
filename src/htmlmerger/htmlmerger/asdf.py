@@ -71,5 +71,3 @@ def main():
   # run the actual merge
   merge (inputFile, outputFile)
 
-
-main()
