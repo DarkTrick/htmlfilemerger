@@ -1,6 +1,6 @@
 from html.parser import HTMLParser
 import base64
-from myutils import *
+from .myutils import *
 import os
 
 class HtmlMerger(HTMLParser):
