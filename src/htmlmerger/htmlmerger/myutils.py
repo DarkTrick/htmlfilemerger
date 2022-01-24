@@ -1,5 +1,3 @@
-import re
-
 
 def getFileContent (strFilepath):
   content = ""

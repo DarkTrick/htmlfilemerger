@@ -1,22 +1,34 @@
-What is this?
-==============
+# What is this?
+
 Program to Merge JS/HTML into one single html file.
 
 ![depiction of what the tool does](./ref/tool_explanation.png)
 
 
-Usage
-=====
+# Install / Run
+## Run without Installation
 ```
+# (download everything)
 cd ./src
 python3 htmlmerger inputfile [optional: outputfile]
 ```
 
+## Install & Run
+```
+# install:
+#(download everything)
+cd ./src
+python3 -m pip install .
 
-Dependencies
-============
-Uses only python-native libraries
+# run:
+htmlmerger inputfile [optional: outputfile]
+```
 
-TODO
-=====
- - clean up code (?) ... this will never happen :D
+# Dependencies
+
+Only python-native libraries (`os`, `base64`, `html.parser`)
+
+
+# Development
+
+See [Readme within `src`](./src/README.MD)
