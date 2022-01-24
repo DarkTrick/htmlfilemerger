@@ -1,0 +1,1 @@
+python3 ../../htmlmerger "./test.html"
