@@ -48,7 +48,7 @@ def merge(strInfile, strOutfile):
 
 
 
-def main():
+def mainfunc():
   args = sys.argv[1:] # cut away pythonfile
   if (len (args) < 1):
     print (gHelp)
