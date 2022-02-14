@@ -1,4 +1,4 @@
-from ..main import main
+from ..main2 import mainfunc
 
 def generic_main():
-  main()
+  mainfunc()
