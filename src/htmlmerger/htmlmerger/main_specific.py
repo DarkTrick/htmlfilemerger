@@ -52,7 +52,7 @@ def main():
   args = sys.argv[1:] # cut away pythonfile
   if (len (args) < 1):
     print (gHelp)
-    exit()
+    return
 
   inputFile = args[0]
 
