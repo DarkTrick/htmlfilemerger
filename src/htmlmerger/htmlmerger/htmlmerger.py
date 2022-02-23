@@ -1,7 +1,9 @@
-from html.parser import HTMLParser
 import base64
-from .myutils import *
 import os
+import urllib.parse
+from html.parser import HTMLParser
+from .myutils import *
+
 
 class HtmlMerger(HTMLParser):
   """
@@ -29,7 +31,7 @@ class HtmlMerger(HTMLParser):
 
 
   def _getFullFilepath (self, relPath: str):
-    return os.path.join (self._baseDir, relPath)
+    return urllib.parse.unquote (os.path.join (self._baseDir, relPath))
 
   def _getEncodedImageContent (self, imgRelPath_nullable):
     """

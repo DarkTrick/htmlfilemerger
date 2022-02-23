@@ -16,7 +16,7 @@ class TestBasicCases(unittest.TestCase):
     self.assertEqual (actual, "<html></html>")
 
 
-  def test_javascriptFile(self):
+  def TODOtest_javascriptFile(self):
     # setup
     subject = HtmlMerger ()
     input = "<html><head>" + \
@@ -101,7 +101,7 @@ class TestBasicCases(unittest.TestCase):
 
     # test
     expected = "<html><head>" + \
-               "  <script></script>" + \
+               "  <script>/* file ./non_existing_file.js not found */</script>" + \
                "</head></html>"
     self.assertEqual (actual, expected)
 
@@ -122,6 +122,28 @@ class TestBasicCases(unittest.TestCase):
     # test
     expected = "<html><head>" + \
                "  <script id='x' type='text/uri-list'>https://a.com</script>" + \
+               "</head></html>"
+    self.assertEqual (actual, expected)
+
+
+
+
+
+  def test_encodedPath(self):
+    # setup
+    targetFile = "javascript%20file%20with%20spaces.js"
+    subject = HtmlMerger ()
+    input = "<html><head>" + \
+            "  <script type='text/javascript'  src='./" + targetFile + "'></script>" + \
+            "</head></html>"
+
+
+    # run
+    actual = subject.run (input, self._TEST_ROOT_DIR)
+
+    # test
+    expected = "<html><head>" + \
+               "  <script type='text/javascript'>var foo = 0;</script>" + \
                "</head></html>"
     self.assertEqual (actual, expected)
 
