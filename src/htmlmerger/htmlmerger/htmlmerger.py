@@ -23,10 +23,12 @@ class HtmlMerger(HTMLParser):
                         ": Could not find file `" + str (file_asInHtmlFile) +
                         "`; searched in `" + str (file_searchpath) + "`." )
 
+  def _addWarning (self, message):
+    self.messages.append ("Warning: Line " + str (self.getpos ()[0]) + ": " +
+                          str (message))
 
 
-
-  def _getFullFilepath (self, relPath):
+  def _getFullFilepath (self, relPath: str):
     return os.path.join (self._baseDir, relPath)
 
   def _getEncodedImageContent (self, imgRelPath_nullable):
@@ -58,6 +60,9 @@ class HtmlMerger(HTMLParser):
   def _keyValueToString(self, key, value):
     quote = "'"
 
+    if (not value):
+      return ''
+
     # change quotes if necessary
     if (quote in value):
       quote = '"'
@@ -67,6 +72,8 @@ class HtmlMerger(HTMLParser):
 
 
   def _tagToString (self, tag: str, dictAttributes):
+    """Create a string from all attributes within a tag
+    """
     result = "<" + tag
 
     for key in dictAttributes:
@@ -129,12 +136,14 @@ class HtmlMerger(HTMLParser):
 
     if (tag == "script"):
       src = dict_getSafe (attrs, "src")
-      strReferencedFile = self._getFullFilepath (src)
-      if (not os.path.isfile (strReferencedFile)):
-        self._addMessage_fileNotFound (src, strReferencedFile)
-        return
-      referencedContent = getFileContent (strReferencedFile)
-      self._additionalData += referencedContent
+      if (None != src):
+        strReferencedFile = self._getFullFilepath (src)
+        if (not os.path.isfile (strReferencedFile)):
+          self._addMessage_fileNotFound (src, strReferencedFile)
+          self._additionalData += "/* file {filename} not found */".format (filename=src)
+        else:
+          referencedContent = getFileContent (strReferencedFile)
+          self._additionalData += referencedContent
 
       dict_removeSafe (attrs, "src")
       self._result += self._tagToString (tag, attrs)

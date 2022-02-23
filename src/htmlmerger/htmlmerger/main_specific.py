@@ -49,6 +49,9 @@ def merge(strInfile, strOutfile):
 
 
 def main():
+
+  #sys.argv = [0,"/media/nimono/data/Programs/htmlmerger/src/htmlmerger/test/testfiles/basic_1/testfile.html"]
+
   args = sys.argv[1:] # cut away pythonfile
   if (len (args) < 1):
     print (gHelp)
@@ -66,7 +69,7 @@ def main():
 
     if (os.path.isfile (outputFile)):
       print ("FATAL ERROR: Output file " + outputFile + " does already exist")
-      exit ()
+      return
 
   # run the actual merge
   merge (inputFile, outputFile)

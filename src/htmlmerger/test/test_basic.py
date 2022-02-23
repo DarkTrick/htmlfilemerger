@@ -88,3 +88,44 @@ class TestBasicCases(unittest.TestCase):
 
 
 
+  def test_javascriptFile_not_existing(self):
+    """Test behavior if file does not exist"""
+    # setup
+    subject = HtmlMerger ()
+    input = "<html><head>" + \
+            '  <script async="" src="./non_existing_file.js"></script>' + \
+            "</head></html>"
+
+    # run
+    actual = subject.run (input, self._TEST_ROOT_DIR)
+
+    # test
+    expected = "<html><head>" + \
+               "  <script></script>" + \
+               "</head></html>"
+    self.assertEqual (actual, expected)
+
+
+
+  def test_script_urilist(self):
+    """Test behavior for  `<script id="x" type="text/uri-list">`"""
+
+    # setup
+    subject = HtmlMerger ()
+    input = "<html><head>" + \
+            '  <script id="x" type="text/uri-list">https://a.com</script>' + \
+            "</head></html>"
+
+    # run
+    actual = subject.run (input, self._TEST_ROOT_DIR)
+
+    # test
+    expected = "<html><head>" + \
+               "  <script id='x' type='text/uri-list'>https://a.com</script>" + \
+               "</head></html>"
+    self.assertEqual (actual, expected)
+
+
+
+
+
