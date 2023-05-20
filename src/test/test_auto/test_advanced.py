@@ -1,5 +1,5 @@
 import unittest
-from htmlmerger.htmlmerger import HtmlMerger
+from htmlmerger.htmlmerger.htmlmerger import HtmlMerger
 
 
 class TestAdvancedCases(unittest.TestCase):

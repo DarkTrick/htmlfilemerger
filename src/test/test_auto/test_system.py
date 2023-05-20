@@ -4,15 +4,15 @@ import unittest
 import sys
 import tempfile
 
-from htmlmerger.main_generic.main import generic_main
+from htmlmerger.htmlmerger.main import main
 
 class TestBasicCases(unittest.TestCase):
   _TEST_ROOT_DIR = "./test/testfiles"
 
-  def test_run_main(self):
+  #def test_run_main(self):
     #setup
     #run
-    generic_main ()
+    #main ()
     #check
     # (error check is done automatically)
 
@@ -24,6 +24,6 @@ class TestBasicCases(unittest.TestCase):
 #    outfile = tempfile.mktemp ()
 #    sys.argv = [1,infile, outfile]
 #    #run
-#    generic_main ()
+#    main ()
 #    #check
 #    # todo

@@ -6,22 +6,21 @@ Program to Merge JS/HTML into one single html file.
 
 
 # Install / Run
+
+## Install
+`pip install git+https://github.com/DarkTrick/htmlfilemerger.git#subdirectory=src`
+
+## Uninstall
+`pip uninstall htmlmerger`
+
+## Run
+
+`htmlmerger inputfile [optional: outputfile]`
+
 ## Run without Installation
 ```
-# (download everything)
 cd ./src
-python3 htmlmerger inputfile [optional: outputfile]
-```
-
-## Install & Run
-```
-# install:
-#(download everything)
-cd ./src
-python3 -m pip install .
-
-# run:
-htmlmerger inputfile [optional: outputfile]
+python3 -m htmlmerger inputfile [optional: outputfile]
 ```
 
 # Dependencies
@@ -31,4 +30,22 @@ Only python-native libraries (`os`, `base64`, `html.parser`)
 
 # Development
 
-See [Readme within `src`](./src/README.MD)
+See also [Readme within `src`](./src/README.MD)
+## venv
+(No external packages are needed so far; so no venv should be necessary)
+
+## Testing
+
+```
+cd ./src
+python -m unittest
+```
+
+There are also files for manual testing in `... /test_manual/`
+
+## Build
+```
+cd src
+pip install build # <-- only if not yet installed
+python -m build
+```

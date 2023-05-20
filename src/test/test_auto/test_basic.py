@@ -1,9 +1,13 @@
 import unittest
-from htmlmerger.htmlmerger import HtmlMerger
+import os
+from htmlmerger.htmlmerger.htmlmerger import HtmlMerger
 
 
 class TestBasicCases(unittest.TestCase):
-  _TEST_ROOT_DIR = "./test/testfiles"
+  _TEST_ROOT_DIR = "./test/test_auto/testfiles"
+
+  def test_testdir_exists(self):
+    self.assertTrue(os.path.isdir(self._TEST_ROOT_DIR), "Test-files directory is not accessible. Check the path!")
 
   def test_justHtmlTag(self):
     # setup
