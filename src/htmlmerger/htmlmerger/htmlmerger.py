@@ -103,36 +103,9 @@ class HtmlMerger(HTMLParser):
   def handle_data(self, data):
     self._result += data
 
-
   def handle_starttag(self, tag, attrs):
-    attrs = dict(attrs)
 
-    # --------------------------------------------------
-    # --  Main work: replace stuff, that's referenced --
-    # --------------------------------------------------
-    if (tag == "link"):
-      rel = dict_getSafe (attrs, "rel")
-      if (rel == "stylesheet"):
-        href = dict_getSafe (attrs, "href")
-        if (href):
-          hrefFullPath = self._getFullFilepath (href)
-          if (not os.path.isfile (hrefFullPath)):
-            self._addMessage_fileNotFound (href, hrefFullPath)
-            return
-          styleContent = getFileContent (hrefFullPath)
-          self._result += "<style>" + styleContent + "</style>"
-          return
-
-      if (rel == "icon"):
-        href = dict_getSafe (attrs, "href")
-        href = self._getEncodedImageContent (href)
-
-        attrs["href"] = href
-        self._result += self._tagToString (tag, attrs)
-        return
-
-
-    if (tag == "img"):
+    def _handle_img_tag(attrs: dict):
       src = dict_getSafe (attrs, "src")
       src = self._getEncodedImageContent (src)
 
@@ -140,9 +113,45 @@ class HtmlMerger(HTMLParser):
       self._result += self._tagToString (tag, attrs)
       return
 
-    if (tag == "script"):
+    def _handle_link_tag(attrs: dict) -> bool:
+      """
+      @return: True => value processed
+               False => nothing to process
+      """
+
+      def _handle_stylesheet(attrs: dict):
+        href = dict_getSafe (attrs, "href")
+        if (href):
+          hrefFullPath = self._getFullFilepath (href)
+          if (not os.path.isfile (hrefFullPath)):
+            self._addMessage_fileNotFound (href, hrefFullPath)
+            return True
+          styleContent = getFileContent (hrefFullPath)
+          self._result += "<style>" + styleContent + "</style>"
+          return True
+        return False
+
+      def _handle_icon(attrs: dict):
+        href = dict_getSafe (attrs, "href")
+        href = self._getEncodedImageContent (href)
+
+        attrs["href"] = href
+        self._result += self._tagToString (tag, attrs)
+        return True
+
+      rel = dict_getSafe (attrs, "rel")
+      if (rel == "stylesheet"):
+        if(_handle_stylesheet(attrs)): return True
+
+      if (rel == "icon"):
+        return _handle_icon(attrs)
+
+      return False
+
+    def _handle_script(attrs: dict) -> bool:
       src = dict_getSafe (attrs, "src")
-      if (None != src):
+
+      if (src):
         strReferencedFile = self._getFullFilepath (src)
         if (not os.path.isfile (strReferencedFile)):
           self._addMessage_fileNotFound (src, strReferencedFile)
@@ -153,6 +162,22 @@ class HtmlMerger(HTMLParser):
 
       dict_removeSafe (attrs, "src")
       self._result += self._tagToString (tag, attrs)
+      return True
+
+    attrs = dict(attrs)
+    # --------------------------------------------------
+    # --  Main work: replace stuff, that's referenced --
+    # --------------------------------------------------
+    if (tag == "link"):
+      if(_handle_link_tag(attrs)):
+        return
+
+    if (tag == "img"):
+      _handle_img_tag(attrs)
+      return
+
+    if (tag == "script"):
+      _handle_script(attrs)
       return
 
 

@@ -1,4 +1,7 @@
 
+from typing import Union
+
+
 def getFileContent (strFilepath):
   content = ""
   with open (strFilepath, "r") as file:
