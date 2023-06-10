@@ -151,6 +151,25 @@ class TestBasicCases(unittest.TestCase):
                "</head></html>"
     self.assertEqual (actual, expected)
 
+  def test_dataurl(self):
+    """
+    reported in bug #12
+    """
+     # setup
+    targetFile = "javascript%20file%20with%20spaces.js"
+    subject = HtmlMerger ()
+    input = """
+        <html><body>
+          <img src='data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAUAAAAFCAYAAACNbyblAAAAHElEQVQI12P4
+            //8/w38GIAXDIBKE0DHxgljNBAAO9TXL0Y4OHwAAAABJRU5ErkJggg=='/></body></html>
+          """
+
+    # run
+    actual = subject.run (input, self._TEST_ROOT_DIR)
+
+    # test (expect `<img ... />` to have become `<img ...></img>`)
+    expected = input.replace("/></body>", "></img></body>")
+    self.assertEqual (actual, expected)
 
 
 

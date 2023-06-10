@@ -42,6 +42,10 @@ class HtmlMerger(HTMLParser):
       return None
     imgPathRel = imgRelPath_nullable
 
+    # if it's already a data src, there's nothing else to do
+    if imgPathRel.startswith("data:"):
+        return imgPathRel
+
     imgPathFull = self._getFullFilepath (imgPathRel)
     if (not os.path.isfile (imgPathFull)):
       self._addMessage_fileNotFound (imgPathRel, imgPathFull)
