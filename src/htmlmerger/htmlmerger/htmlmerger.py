@@ -52,7 +52,12 @@ class HtmlMerger(HTMLParser):
       return None
 
     imageExtension = os.path.splitext (imgPathRel)[1][1:]
-    imageFormat = imageExtension
+
+    # SVG is an image format where the file extension is not the mime type
+    if imageExtension == "svg":
+        imageFormat = "svg+xml"
+    else:
+        imageFormat = imageExtension
 
     # convert image data into browser-undertandable src value
     image_bytes = getFileContentBytes (imgPathFull)
